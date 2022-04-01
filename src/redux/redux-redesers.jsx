@@ -1,56 +1,15 @@
-import { createReducer, createSlice } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
-import { addItem, fetchItem, removeItem } from './operetions';
-import { changeFilter } from './redux-action';
-// export const item = createReducer([], {
-//   [addItem.fulfilled]: (state, action) => {
-//     console.log(action.payload);
-//     return [...state, action.payload].sort((firstStudent, secondStudent) =>
-//       firstStudent.name.localeCompare(secondStudent.name)
-//     );
-//   },
-//   [removeItem.fulfilled]: (state, action) => {
-//     console.log(
-//       [...state.filter(item => item.id !== action.payload)].sort(
-//         (firstStudent, secondStudent) =>
-//           firstStudent.name.localeCompare(secondStudent.name)
-//       )
-//     );
-//     return [...state.filter(item => item.id !== action.payload)].sort(
-//       (firstStudent, secondStudent) =>
-//         firstStudent.name.localeCompare(secondStudent.name)
-//     );
-//   },
-//   [fetchItem.fulfilled]: (state, action) => {
-//     console.log(action);
-//     return [
-//       ...state,
-//       ...action.payload.sort((firstStudent, secondStudent) =>
-//         firstStudent.name.localeCompare(secondStudent.name)
-//       ),
-//     ];
-//   },
-// });
-// export const filter = createReducer('', {
-//   [changeFilter]: (state, action) => {
-//     return action.payload;
-//   },
-// });
-// export const loader = createReducer(false, {
-//   [addItem.pending]: () => true,
-//   [addItem.fulfilled]: () => false,
-//   [addItem.rejected]: () => false,
-//   [removeItem.pending]: () => true,
-//   [removeItem.fulfilled]: () => false,
-//   [removeItem.rejected]: () => false,
-//   [fetchItem.pending]: () => true,
-//   [fetchItem.rejected]: () => false,
-//   [fetchItem.fulfilled]: () => false,
-// });
+import { createSlice } from '@reduxjs/toolkit';
 
-// export default combineReducers({ item, filter, loader });
+import {
+  addItem,
+  fetchItem,
+  removeItem,
+  addUser,
+  logInUser,
+  logOutUser,
+} from './operetions';
 
-const itemSlice = createSlice({
+export const itemSlice = createSlice({
   name: 'item',
   initialState: { filter: '', item: [], loader: false },
   reducers: {
@@ -104,5 +63,50 @@ const itemSlice = createSlice({
     },
   },
 });
-export default itemSlice.reducer;
-export const { changeFilterr } = itemSlice.actions;
+export const authSlice = createSlice({
+  name: 'auth',
+  initialState: {
+    user: { email: null, password: null, name: null },
+    token: null,
+    logIn: false,
+    isFetchingCurrentUser: false,
+  },
+
+  extraReducers: {
+    [addUser.fulfilled]: (state, action) => {
+      state.user.email = action.payload.user.email;
+      state.user.name = action.payload.user.name;
+      state.token = action.payload.token;
+      state.logIn = true;
+    },
+    [addUser.rejected]: (state, action) => {
+      alert('Что-то пошло не так повторите ');
+      state.logIn = false;
+    },
+
+    [logInUser.fulfilled]: (state, action) => {
+      console.log(action);
+      state.user.email = action.payload.user.email;
+      state.user.name = action.payload.user.name;
+      state.token = action.payload.token;
+      state.logIn = true;
+      state.isFetchingCurrentUser = false;
+    },
+    [logOutUser.fulfilled]: state => {
+      state.user.email = null;
+      state.user.name = null;
+      state.token = null;
+      state.logIn = false;
+    },
+
+    [logInUser.rejected]: state => {
+      alert('Что-то пошло не так повторите ');
+      state.logIn = false;
+      state.isFetchingCurrentUser = false;
+    },
+    [logInUser.pending](state) {
+      state.isFetchingCurrentUser = true;
+    },
+  },
+});
+export const { changeFilter } = itemSlice.actions;
