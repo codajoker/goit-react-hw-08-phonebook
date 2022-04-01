@@ -1,12 +1,16 @@
 import React from 'react';
 import { useState } from 'react';
+import { addItem } from 'redux/operetions';
 
-import PropTypes from 'prop-types';
 import { Button } from './Form.styled';
+import { useDispatch, useSelector } from 'react-redux';
 
-export function Form({ onSubmit }) {
+function Form() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  let contacts = useSelector(state => state.contacts.item);
+  const dispatch = useDispatch();
+
   const onChange = e => {
     const { name, value } = e.target;
     switch (name) {
@@ -22,11 +26,22 @@ export function Form({ onSubmit }) {
         break;
     }
   };
-
+  const addContact = data => {
+    if (
+      contacts.find(contact => {
+        return (
+          contact.name.toLocaleLowerCase() === data.name.toLocaleLowerCase()
+        );
+      })
+    ) {
+      return alert(`${data.name} is already in contacts`);
+    }
+    dispatch(addItem(data));
+  };
   const handleSubmit = e => {
     e.preventDefault();
 
-    onSubmit({ name, number });
+    addContact({ name, number });
     reset();
   };
   const reset = () => {
@@ -65,7 +80,4 @@ export function Form({ onSubmit }) {
     </form>
   );
 }
-
-Form.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
+export default Form;
