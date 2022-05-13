@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import second from './index.css';
 import 'react-toastify/dist/ReactToastify.css';
 ReactDOM.render(
-  <BrowserRouter>
+  <BrowserRouter basename="/goit-react-hw-08-phonebook/">
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <App />
